@@ -1,7 +1,7 @@
-inoremap <C-S> <Esc>:w<CR>i
+let mapleader='\'
+inoremap <C-S> <Esc>:w<CR>a
 nnoremap <C-S> :w<CR>
 
 inoremap <C-Z> <Esc>ua
-nnoremap <C-Z> u
 
 

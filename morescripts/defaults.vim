@@ -5,7 +5,7 @@ set mouse=a
 
 
 "shows number line on left side 
-set number relativenumber
+set number "relativenumber "now i think i will use gg instead of relative numbers movement or i will use :set rnu whenever i will need to delete lines relatively
 "sets a ruler on left 
 set ruler
 
@@ -40,7 +40,7 @@ set smartcase
 
 
 "don't update screen while running macro or script
-set lazyredraw
+"set lazyredraw
 
 
 "Always try to show a paragraph’s last line.
@@ -56,4 +56,9 @@ set sidescrolloff=5
 "Enable syntax highlighting.
 syntax enable
 "Enable line wrapping.
-set wrap
+set wrap "use :set wrap! to disable wrap
+
+"use treesitter foldmethod
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
+set foldnestmax=1
