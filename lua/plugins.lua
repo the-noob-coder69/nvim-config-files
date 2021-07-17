@@ -2,7 +2,7 @@ return require('packer').startup(function()
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
 
-  -- A poggers statusline
+  -- A poggers statusline/tabline
   use 'vim-airline/vim-airline'
 
   -- LSP plugins
