@@ -19,7 +19,20 @@ return packer.startup(function()
 
   -- A poggers statusline/tabline
   use {
-      'vim-airline/vim-airline'
+      'vim-airline/vim-airline',
+      config=function()
+        -- powerline symbols
+        vim.g.airline_left_sep = '??'
+        vim.g.airline_left_alt_sep = '??'
+        vim.g.airline_right_sep = '??'
+        vim.g.airline_right_alt_sep = '??'
+        vim.g.airline_symbols.branch = '??'
+        vim.g.airline_symbols.colnr = ' ??:'
+        vim.g.airline_symbols.readonly = '??'
+        vim.g.airline_symbols.linenr = ' ??:'
+        vim.g.airline_symbols.maxlinenr = '?? '
+        vim.g.airline_symbols.dirty='??'
+      end
   }
 
   -- LSP plugins
@@ -446,7 +459,9 @@ return packer.startup(function()
 
   use {
       'kyazdani42/nvim-web-devicons',
-      config=require('nvim-web-devicons').setup()
+      config=function()
+        require('nvim-web-devicons').setup()
+      end
   }
 
   use {
@@ -939,23 +954,145 @@ return packer.startup(function()
   }
 
   use {
-      'windwp/nvim-autopairs'
+      'windwp/nvim-autopairs',
+      disable=true,
+      config=function()
+        local remap = vim.api.nvim_set_keymap
+        local npairs = require('nvim-autopairs')
+
+        -- skip it, if you use another global object
+        _G.MUtils= {}
+
+        vim.g.completion_confirm_key = ""
+
+        MUtils.completion_confirm=function()
+          if vim.fn.pumvisible() ~= 0  then
+            if vim.fn.complete_info()["selected"] ~= -1 then
+            require'completion'.confirmCompletion()
+            return npairs.esc("<c-y>")
+            else
+            vim.api.nvim_select_popupmenu_item(0 , false , false ,{})
+            require'completion'.confirmCompletion()
+            return npairs.esc("<c-n><c-y>")
+            end
+          else
+            return npairs.autopairs_cr()
+          end
+        end
+        remap('i' , '<CR>','v:lua.MUtils.completion_confirm()', {expr = true , noremap = true})
+    end
   }
 
   use {
-      'p00f/nvim-ts-rainbow'
+      'jiangmiao/auto-pairs'
   }
 
   use {
-      'pocco81/truezen.nvim'
+      'p00f/nvim-ts-rainbow',
+      config=function()
+        require'nvim-treesitter.configs'.setup {
+            rainbow = {
+              enable = true,
+              extended_mode = true, -- Highlight also non-parentheses delimiters, boolean or table: lang -> boolean
+              max_file_lines = 1000, -- Do not enable for files with more than 1000 lines, int
+              colors = {} -- table of hex strings
+              termcolors = {} -- table of colour name strings
+            }
+          }
+        end          
+  }
+
+  use {
+      'pocco81/truezen.nvim',
+      cmd='zen'
+      config=function()
+        local true_zen = require("true-zen")
+
+        true_zen.setup({
+            ui = {
+                bottom = {
+                    laststatus = 0,
+                    ruler = false,
+                    showmode = false,
+                    showcmd = false,
+                    cmdheight = 1,
+                },
+                top = {
+                    showtabline = 0,
+                },
+                left = {
+                    number = false,
+                    relativenumber = false,
+                    signcolumn = "no",
+                },
+            },
+            modes = {
+                ataraxis = {
+                    left_padding = 32,
+                    right_padding = 32,
+                    top_padding = 1,
+                    bottom_padding = 1,
+                    ideal_writing_area_width = {0},
+                    just_do_it_for_me = true,
+                    keep_default_fold_fillchars = true,
+                    custome_bg = "",
+                    bg_configuration = true,
+                    affected_higroups = {NonText = {}, FoldColumn = {}, ColorColumn = {}, VertSplit = {}, StatusLine = {}, StatusLineNC = {}, SignColumn = {}}
+                },
+                focus = {
+                    margin_of_error = 5,
+                    focus_method = "experimental"
+                },
+            },
+            integrations = {
+                vim_gitgutter = false,
+                galaxyline = false,
+                tmux = false,
+                gitsigns = false,
+                nvim_bufferline = false,
+                limelight = false,
+                vim_airline = false,
+                vim_powerline = false,
+                vim_signify = false,
+                express_line = false,
+                lualine = false,
+            },
+            misc = {
+                on_off_commands = false,
+                ui_elements_commands = false,
+                cursor_by_mode = false,
+            }
+        })
+      end
   }
   
   use {
-      'pocco81/autosave.nvim'
+      'pocco81/autosave.nvim',
+      config=function()
+        local autosave = require("autosave")
+        autosave.setup(
+            {
+                enabled = true,
+                execution_message = "AutoSave: saved at " .. vim.fn.strftime("%H:%M:%S"),
+                events = {"InsertLeave"},
+                conditions = {
+                    exists = true,
+                    filetype_is_not = {},
+                    modifiable = true
+                },
+                write_all_buffers = false,
+                on_off_commands = true,
+                clean_command_line_interval = 0,
+                debounce_delay = 135
+            }
+        )
+      end
   }
 
   use {
-      'folke/zen-mode.nvim'
+      'folke/zen-mode.nvim',
+      cmd='zen2',
+      disable=true
   }
 
   use {
@@ -963,11 +1100,21 @@ return packer.startup(function()
   }
 
   use {
-      'mizlan/iswap.nvim'
+      'mizlan/iswap.nvim',
+      config=function()
+        require('iswap').setup()
+      end
   }
 
   use {
-      'nacro90/numb.nvim'
+      'nacro90/numb.nvim',
+      config=function()
+        require('numb').setup{
+            show_numbers = true, -- Enable 'number' for the window while peeking
+            show_cursorline = true, -- Enable 'cursorline' for the window while peeking
+            number_only = false, -- Peek only when the command is only a number instead of when it starts with a number
+         }         
+      end
   }
 
   use {
@@ -975,7 +1122,10 @@ return packer.startup(function()
           'mhartington/formatter.nvim',
           disable=true
       },
-      'lukas-reineke/format.nvim'
+      {
+          'lukas-reineke/format.nvim',
+          disable=true
+      }
   }
 
 end)
